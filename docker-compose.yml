@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  web: 
+    build: ./Movies-API
+    command: gunicorn Recommendations.wsgi:application --bind 0.0.0.0:8000
+    expose:
+      - 8000
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+
+  nginx:
+    build: ./Frontend
+    ports:
+      - 80:80
+    depends_on:
+      - web
+
+  db:
+    image: postgres:alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=manoji
+      - POSTGRES_PASSWORD=01221789
+      - POSTGRES_DB=Movies
+
+
+volumes:
+  postgres_data:
